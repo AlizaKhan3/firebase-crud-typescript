@@ -19,16 +19,28 @@ import AddCourse from "../components/AddCourse";
 import UpdateCourse from "../components/UpdateCourse";
 import { useNavigate } from "react-router-dom";
 import { SiFirebase } from "react-icons/si";
+import CourseHelperClass, { ICourseDoc } from "../CoursesHelperClass";
+// import getCourse
+
 const Home = () => {
-  const [courses, setCourses] = useState([
+  const [courses, setCourses] = useState<ICourseDoc[]>([
     {
       id: "hi",
-      name: "Demo Course",
-      students: 100,
-      type: "easy",
+      CourseName: "react",
+      CourseType: "hard",
+      Fee: 9000
     },
   ]);
   const navigate = useNavigate();
+
+  const courseHelper = new CourseHelperClass(); // Create an instance of the class
+  const fetchCourses = async () => {
+    const courses = await courseHelper.getCourses(); // Call the correct method
+    setCourses(courses);
+  }
+  useEffect(() => {
+    fetchCourses();
+  }, [])
 
   return (
     <>
@@ -48,47 +60,28 @@ const Home = () => {
             <Thead>
               <Tr>
                 <Th>Name</Th>
-                <Th>Students Enrolled</Th>
+                <Th>Fee</Th>
                 <Th>Type</Th>
                 <Th></Th>
               </Tr>
             </Thead>
             <Tbody>
               {courses.map((course) => (
-                <Tr key={course.name}>
-                  <Td>{course.name}</Td>
-                  <Td>{course.students}</Td>
+                <Tr key={course.id}>
+                  <Td>{course.CourseName}</Td>
+                  <Td>{course.Fee}</Td>
                   <Td>
                     <Badge
                       colorScheme={
-                        course.type === "easy"
+                        course.CourseType === "easy"
                           ? "green"
-                          : course.type === "medium"
-                          ? "blue"
-                          : "red"
+                          : course.CourseType === "medium"
+                            ? "blue"
+                            : "red"
                       }
                     >
-                      {course.type}
+                      {course.CourseType}
                     </Badge>
-                  </Td>
-                  <Td>
-                    <Flex gap="4">
-                      <Icon
-                        cursor="pointer"
-                        onClick={() => navigate(`/course/${course.id}`)}
-                        fontSize="xl"
-                      >
-                        <FaEye />
-                      </Icon>
-                      <UpdateCourse />
-                      <Icon
-                        _hover={{ color: "red.500" }}
-                        color="red.300"
-                        fontSize="xl"
-                      >
-                        <FaTrash />
-                      </Icon>
-                    </Flex>
                   </Td>
                 </Tr>
               ))}
